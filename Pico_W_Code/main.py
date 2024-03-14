@@ -1,56 +1,127 @@
-import Raspberry_Pi_Competition.compmain
-'''
-from mymax import *
-from machine import SoftI2C, Pin
-from utime import sleep_ms
-import random
+import socket
+import time
+import network
+from machine import *
+import _thread
+import bloodreader as bloodreader
+import breathcounter as breathcounter
 
-red = 33
-sda = 16
-scl = 17
-freq = 400000
+Pin(2,Pin.OUT).value(0)
+Pin(1,Pin.OUT).value(1)
+time.sleep_ms(2000)
+Pin(1,Pin.OUT).value(0)
 
-i2c = SoftI2C(sda=Pin(sda),scl=Pin(scl),freq=freq)
+def getonlan():
+	ssid = "HUAWEI-0411DD"
+	password = "password"
+	
+	wlan = network.WLAN(network.STA_IF)
+	wlan.active(True)
+	wlan.connect(ssid, password)
+	
+	max_wait = 10
+	while max_wait > 0:
+		if wlan.status() < 0 or wlan.status() >= 3:
+			break
+		max_wait -= 1
+		time.sleep(1)
+	
+	if wlan.status() != 3:
+		print('network connection failed')
+		return False
+	else:
+		print(wlan.status())
+		print(wlan.ifconfig())
+		return True
 
-sensor = MyMax30102(i2c)
-sensor.readall()
-#for i in [4,6,7,8]:
-#    sensor.write(i,64)
-#for i in range(11,40):
-#    sensor.write(i,64)
-sleep_ms(1000)
-sensor.readall()
+def setupsocket():
+	try:
+		addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
+		s = socket.socket()
+		s.bind(addr)
+		s.listen(10)
+		print('listening on', addr)
+		return s, addr
+	except:
+		print("error, you may want to reset(). make sure you run from main.py")
+		return "error", "error"
 
-#import find_ap
-#import baro
+class Client():
+	def __init__(self, s):
+		self.s = s
+		cl, addr = s.accept()
+		print('client connected from', addr)
+		self.cl = cl
+		self.addr = addr
+		self.count = 0
 
-#from ap_maker import *
-#from machine import Pin
-#import random
-#import wireless
+	def getblood(self):
+		print("\nSending to",self.addr,":\t","On it!")
+		self.cl.send("On it!")
+		print("Sent")
+		return bloodreader.getReadings()
 
-print("hello from main.py")
+	def getair(self):
+		print("\nSending to",self.addr,":\t","On it!")
+		self.cl.send("On it!")
+		print("Sent")
+		return str(round(breathcounter.getReadings2()))
 
-ssid = "Pico"
-ap = create_ap(ssid,"password")
-get_ap_info(ap)
-s = create_socket("0.0.0.0",80)
-print(s)
-if type(s)!=type(1):
-    inp = "y"
-    while "y" in inp:
-        inp = "y"#input("Open/re-open socket?")
-        if not "y" in inp:
-            break;
-        response = "blank"
-        conn, addr = get_client(s)
-        Pin(16, Pin.OUT).value(1)
-        while response!="":
-            response = "hello world!"#input("Response: ")
-            send(conn, response)
-            print(conn.recv(1024))
-        print("Closing conn:",conn)
-        conn.close()
-        Pin(16, Pin.OUT).value(0)
-    s.close()
-'''
+	def getmsg(self):
+		request = str(self.cl.recv(1024).decode('ASCII'))
+		print("\nReceived from",self.addr,":\t",request)
+		return request
+
+	def respondTo(self, request):
+		if request in ["Establishing connection","end"]:
+			response = request
+		elif request=="blood":
+			response = self.getblood()
+		elif request=="air":
+			response = self.getair()
+		else:
+			response = "Umm, I don't know what to say to that"
+		
+		print("\nSending to",self.addr,":\t",response)
+		try:
+			self.cl.send(str(response))
+			print("Sent")
+		except:
+			print("Failed to send (socket is probably closed)")
+			return False
+		
+		return request!="end"
+
+	def close(self):
+		self.cl.close()
+
+onlan = getonlan()
+for i in range(10):
+	if not onlan:
+		print("failed\n")
+		time.sleep_ms(500)
+		print("attempt "+str(i+2)+"...")
+		Pin(2,Pin.OUT).value(1)
+		time.sleep_ms(500)
+		Pin(2,Pin.OUT).value(0)
+		onlan = getonlan()
+if onlan:
+	print("succeeded")
+	Pin(2,Pin.OUT).value(1)
+	s, myAddr = setupsocket()
+	if myAddr!="error":
+		cont = "y"
+		while not "n" in cont:
+			print("Waiting for client...")
+			client = Client(s)
+			continueTalking = True
+			while continueTalking:
+				request = client.getmsg()
+				continueTalking = client.respondTo(request)
+				client.count += 1
+			client.close()
+			cont = "y"#input("Continue (y/n): ")
+
+Pin(1,Pin.OUT).value(1)
+time.sleep_ms(2000)
+Pin(1,Pin.OUT).value(0)
