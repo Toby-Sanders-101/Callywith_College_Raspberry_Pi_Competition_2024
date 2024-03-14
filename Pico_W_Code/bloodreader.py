@@ -1,4 +1,4 @@
-from Raspberry_Pi_Competition.mymax import *
+from mymax import *
 from machine import SoftI2C, Pin
 from utime import sleep_ms
 
@@ -26,28 +26,3 @@ def getReadings():
 	aveBpm = sum(bpmList)/len(bpmList)
 	sensor.write(33,2)#turn off
 	return str(round(roomTemp))+","+str(round(finalTemp))+","+str(round(aveBpm))
-
-'''
-while False:
-	print(int.from_bytes(sensor.read(12,8)[2:6],"big"))
-	sleep_ms(400)
-while False:
-	if True:
-		rbuf = sensor.read(12,8)
-		SPO2Valid = rbuf[1]
-		HeartbeatValid = rbuf[7]
-		SPO2 = rbuf[0]
-		if SPO2 == 0:
-			SPO2 = -1
-		else:
-			print("SPO2 is : "+str(SPO2)+"%")
-		heartbeat = int(rbuf[2]) << 24 | int(rbuf[3]) << 16 | int(rbuf[4]) << 8 | int(rbuf[5])
-		if heartbeat == 0:
-			heartbeat = -1
-		else:
-			print("heart rate is : "+str(heartbeat)+"bpm")
-		#b = int.from_bytes(sensor.read(20),"big") + int.from_bytes(sensor.read(21),"big")/16
-		#if b!=0:
-			#print("temperature is :",b)
-	sleep_ms(100)
-'''
