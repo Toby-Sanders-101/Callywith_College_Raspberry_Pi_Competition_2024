@@ -1,5 +1,5 @@
 from machine import Pin, ADC
-from utime import sleep_ms
+from time import sleep_ms
 
 s = ADC(Pin(26))
 
@@ -26,7 +26,3 @@ def getReadings2():
 		sleep_ms(period)
 		iterations += 1
 	return (counter * 60_000) / (period * iterations)
-
-#while True:
-#	sleep_ms(75)
-#	print(s.read_u16())
