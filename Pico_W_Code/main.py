@@ -2,7 +2,6 @@ import socket
 import time
 import network
 from machine import *
-import _thread
 import bloodreader as bloodreader
 import breathcounter as breathcounter
 
@@ -12,8 +11,8 @@ time.sleep_ms(2000)
 Pin(1,Pin.OUT).value(0)
 
 def getonlan():
-	ssid = "HUAWEI-0411DD"
-	password = "password"
+	ssid = "HUAWEI-0411DD" #change this to the name of your WiFi
+	password = "password" # and the password of it
 	
 	wlan = network.WLAN(network.STA_IF)
 	wlan.active(True)
@@ -110,8 +109,7 @@ if onlan:
 	Pin(2,Pin.OUT).value(1)
 	s, myAddr = setupsocket()
 	if myAddr!="error":
-		cont = "y"
-		while not "n" in cont:
+		while True:
 			print("Waiting for client...")
 			client = Client(s)
 			continueTalking = True
@@ -120,7 +118,6 @@ if onlan:
 				continueTalking = client.respondTo(request)
 				client.count += 1
 			client.close()
-			cont = "y"#input("Continue (y/n): ")
 
 Pin(1,Pin.OUT).value(1)
 time.sleep_ms(2000)
