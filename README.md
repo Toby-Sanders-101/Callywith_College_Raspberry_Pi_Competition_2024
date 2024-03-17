@@ -16,7 +16,8 @@ This app was developed by the team at Callywith College for the PA Raspberry Pi 
 + 1 USB to microUSB cable
 
 ## Setup
-
+Set up the parts as shown below:
+[Wiring diagram](diagram.png) [Picture of breadboard](image.png)
 
 ## Packages
 On the Raspberry Pi, most modules should be pre-installed with python3:
