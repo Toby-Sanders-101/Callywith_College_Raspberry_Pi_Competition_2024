@@ -1,6 +1,6 @@
 from mymax import *
 from machine import SoftI2C, Pin
-from utime import sleep_ms
+from time import sleep_ms
 
 sda = 4
 scl = 5
