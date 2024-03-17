@@ -17,24 +17,6 @@ This app was developed by the team at Callywith College for the PA Raspberry Pi 
 + 1 USB to microUSB cable
 
 
-## Setup
-1. Turn on the Raspberry Pi and connect to the Internet
-2. Download and unzip this repository
-3. Set up the parts as shown below:
-
-<img src="diagram.png" width="300" height="400"/> <img src="image.png" width="300" height="400"/>
-
-4. Remove the DC power supply because having this connected while the Pico is connected to the computer could damage the electronics
-5. If the Pico is already using MicroPython, use the USB-to-microUSB cable to connect the Pico to the Raspberry Pi. Otherwise, [install MicroPython](https://micropython.org/download/RPI_PICO_W/) first
-6. Open Thonny and select the Pico (RP2040) as the interpretter
-7. Transfer the Pico's code (from this repository) to the Pico
-8. Modify lines 14 and 15 in *Pico_W_Code/main.py* so it can connect to your network (this must be the same LAN that the Raspberry Pi is connected to)
-9. Make sure all the packages below are installed and up-to-date
-10. Run main.py on the Pico. Make a note of the first IP address (of the array of addresses) printed in the Shell
-11. Set line 9 in *Raspberry_Pi_Code/socket_client.py* to `pico = socket.getaddrinfo(addr,80)` where *addr* is the string of the Pico's IP address
-12. Remove the USB cable and reattach the DC power supply - it is all set up and ready for use now!
-
-
 ## Packages
 On the Raspberry Pi, most modules should be pre-installed with python3:
 + socket
@@ -43,4 +25,26 @@ On the Raspberry Pi, most modules should be pre-installed with python3:
 
 You may need to run `[sudo] pip install func_timeout` to install *func_timeout*. For reference, I'm using version 4.3.5
 
+You should also [install Thonny](https://thonny.org) on the Pi
+
 On the Raspberry Pi Pico W, if not already using MicroPython, you must flash the device with the MicroPython uf2 (go to [MicroPython's website](https://micropython.org/download/RPI_PICO_W/) for more information on how to do this). All necessary modules (*machine*, *utime*, *socket* and *network*) should already be installed with MicroPython. I'm using MicroPython v1.22.2
+
+
+## Setup
+1. Turn on the Raspberry Pi and connect to the Internet
+2. Download and unzip this repository
+3. Set up the parts as shown below:
+
+<img src="diagram.png" width="300" height="400"/> <img src="image.png" width="300" height="400"/>
+
+> [!WARNING]
+> Remove the DC power supply at this point because having this connected while the Pico is connected to the computer could damage the electronics
+
+4. If the Pico is already using MicroPython, use the USB-to-microUSB cable to connect the Pico to the Raspberry Pi. Otherwise, [install MicroPython](https://micropython.org/download/RPI_PICO_W/) first
+5. Open Thonny and select the Pico (RP2040) as the interpretter
+6. Transfer the Pico's code (from this repository) to the Pico
+7. Modify lines 14 and 15 in *Pico_W_Code/main.py* so it can connect to your network (this must be the same LAN that the Raspberry Pi is connected to)
+8. Run main.py on the Pico. Make a note of the first IP address (of the array of addresses) printed in the Shell
+9. Set line 9 in *Raspberry_Pi_Code/socket_client.py* to `pico = socket.getaddrinfo(addr,80)` where *addr* is the string of the Pico's IP address
+10. Remove the USB cable and reattach the DC power supply - it is all set up and ready for use now!
+
