@@ -9,9 +9,7 @@ def make_gui():
 	global gui
 	gui = GUI()
 	gui.start()
-	if gui.conn is not None:
-		if gui.conn.running:
-			gui.endconnection()
+	gui.endconnection()
 	quit()
 
 gui_thread = threading.Thread(target=make_gui)
