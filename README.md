@@ -48,3 +48,29 @@ On the Raspberry Pi Pico W, if not already using MicroPython, you must flash the
 9. Set line 9 in *Raspberry_Pi_Code/socket_client.py* to `pico = socket.getaddrinfo(addr,80)` where *addr* is the string of the Pico's IP address
 10. Remove the USB cable and reattach the DC power supply - it is all set up and ready for use now!
 
+
+## Instruction
+1. Connect the DC power supply to the breadboard. After a second or two, you should see the LED at Pin 2 (GP1) light up for two seconds before turning off - this means the *main.py* script is running properly
+2. Over the next minute or so, the LED at Pin 4 (GP2) will flash on for one second then turn off again for a few seconds repeatedly until it connects to the WLAN. You will know that it has connected properly because that LED will turn on and stay on until the device loses power or encounters an error
+3. Run *Raspberry_Pi_Code/main.py* on the Raspberry Pi. This will open the GUI and attempt to connect to the Pico. As long as the Pico has connected to the same WLAN as the Pi is on, and the Pi is setup to connect to the correct IP address, they will connect and exchange confirmation message to each other
+4. Go through the GUI and complete all the sections as accurately as possible (you may need additional measuring devices for some parts)
+5. For the **Blood/Temperature** and **Breathing** sections, press the **Get Readings** button. Read the instructions in the pop-up box then close it (by pressing **OK**). This will then alert the Pico that you want to get the correspnoding data. Here is a more detailed descriptions of the details:
+   - For the **Blood/Temperature** readings, hold one finger down on the sensor on the MAX30102. There should be a red light under your finger while you do this. Hold it there until either/both the red light turns off or the GUI displays new readings underneath the clicked button; this should take about 10 seconds
+   - For the **Breathing** readings, breathe normally but everytime you get to the same point in a breath (eg at the top), press the push button on the breadboard. Do this about 7 times and it will calculate your average breathing rate. You will know that it has finished because the readings in the GUI will update
+  
+> [!TIP]
+> If any of these readings seem drastically wrong, you can redo them as many times as you want!
+
+6. Once all the sections are completed fully, press **Submit**. The computer will process all your data and give you a full analysis of your health including a personalised list of improvements to make
+7. Finally you can press **Quit** and it will terminate the connection to the Pico then close the GUI
+8. If you want to do it again, reopen *Raspberry_Pi_Code/main.py* and it should reconnect to the Pico
+9. To turn off or restart the Pico, simply remove the power source (and reattach it to reset it)
+
+## Explanation
++ Raspberry_Pi_Code
+  + gui.py
+    + MyEntry (class)
+    + GUI (class)
+  + main.py
+  + socket_client.py 
++ Pico_W_Code
