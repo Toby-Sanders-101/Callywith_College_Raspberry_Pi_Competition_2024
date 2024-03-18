@@ -364,5 +364,4 @@ class GUI:
 	def finishfr(self, fr):
 		btn1 = Button(fr, text="Submit", command=self.submit)
 		btn1.place(x=10, y=30)
-		btn2 = Button(fr, text="End connection", command=self.endconnection)
-		btn2.place(x=10, y=70)
+
