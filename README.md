@@ -70,6 +70,8 @@ On the Raspberry Pi Pico W, if not already using MicroPython, you must flash the
 + Raspberry_Pi_Code
   + gui.py
     + MyEntry (class)
+      
+      This is a simple derived class (inheriting methods and properties from the tkinter.Entry class) with a few extra methods: for each mode (string, integer only, float only) there is one method (eg makeInt()) to set the instance as one of these modes, and another method (eg validateInt) that validates the input everytime the value of the object changes.
     + GUI (class)
   + main.py
   + socket_client.py 
