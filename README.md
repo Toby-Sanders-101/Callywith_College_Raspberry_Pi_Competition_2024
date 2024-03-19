@@ -31,7 +31,9 @@ On the Raspberry Pi, most modules should be pre-installed with python3:
 
 You may need to run `[sudo] pip install func_timeout` to install *func_timeout*. For reference, I'm using version 4.3.5
 
-You should also [install Thonny](https://thonny.org) on the Pi
+You should also use `[sudo] pip install ChatterBot` in the terminal to install *chatterbot* and *chatterbot-corpus*.
+
+In addition, you should [install Thonny](https://thonny.org) on the Pi
 
 On the Raspberry Pi Pico W, if not already using MicroPython, you must flash the device with the MicroPython uf2 (go to [MicroPython's website](https://micropython.org/download/RPI_PICO_W/) for more information on how to do this). All necessary modules (*machine*, *time*, *socket* and *network*) should already be installed with MicroPython. I'm using MicroPython v1.22.2
 
