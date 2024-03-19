@@ -4,6 +4,7 @@ from tkinter import ttk, messagebox
 all_data = {}
 for key in ["name","sex","age","weight","height","roomTemp","bodyTemp","bpm","waist","exercise","alcohol","water","breathrate"]:
 	all_data[key] = None
+all_data = {"name":"toby","sex":"m","age":17,"weight":68,"height":180,"roomTemp":20,"bodyTemp":37,"bpm":80,"waist":82,"exercise":180,"alcohol":3.5,"water":2.3,"breathrate":15}
 
 class MyEntry(Entry):
 	
@@ -88,7 +89,7 @@ class GUI:
 		self.h = 500
 		
 		self.conn = None
-		
+		self.bot = None
 		self.waiting = True
 		
 		root = Tk()
@@ -234,11 +235,44 @@ class GUI:
 		lbl3 = Label(fr, text="Heart rate (bpm):\t\t---")
 		lbl3.place(x=10,y=110)
 	
+	def getanswer(self):
+		self.changestateto(DISABLED)
+		self.root.update()
+		if self.bot is not None:
+			question = self.questionentry.get()
+			answer = self.bot.getanswer(question)
+			self.answerlbl.config(text=answer)
+		else:
+			self.answerlbl.config(text="Harry is unavailable at this time :(")
+		self.changestateto(NORMAL)
+	
+	def loadharryfr(self):
+		for child in self.root.winfo_children():
+			child.destroy()
+			
+		self.root.title = "Harry the Health Expert"
+		
+		lbl1 = Label(self.root, text="Ask Harry the Health Expert...", font=("Arial", 16))
+		lbl1.place(relx=0.5, rely=0.2,anchor=CENTER)
+		ent1 = Entry(self.root, font=("Arial", 16))
+		ent1.place(relx=0.5, rely=0.3,anchor=CENTER)
+		btn1 = Button(self.root, text="Get answer", font=("Arial", 16), command=self.getanswer)
+		btn1.place(relx=0.4, rely=0.4,anchor=CENTER)
+		btn2 = Button(self.root, text="Quit", font=("Arial", 16), command=self.root.destroy)
+		btn2.place(relx=0.6,rely=0.4,anchor=CENTER)
+		lbl2 = Label(self.root, font=("Arial",16), wraplength = 700, justify=CENTER)
+		lbl2.place(relx=0.5,rely=0.7,anchor=CENTER)
+		
+		self.questionentry = ent1
+		self.answerlbl = lbl2
+	
 	def resultsfr(self, fr):
 		lbl1 = Label(fr, font=("Arial", 14))
 		lbl1.place(relx=0.5,rely=0.4,width=self.w * 0.9,anchor=CENTER)
-		btn1 = Button(fr, text="Quit", font=("Arial", 16), command=self.root.destroy)
-		btn1.place(relx=0.5,rely=0.9,anchor=CENTER)
+		btn1 = Button(fr, text="Ask Harry...", font=("Arial", 16), command=self.loadharryfr)
+		btn1.place(relx=0.3,rely=0.9,anchor=CENTER)
+		btn2 = Button(fr, text="Quit", font=("Arial", 16), command=self.root.destroy)
+		btn2.place(relx=0.6,rely=0.9,anchor=CENTER)
 	
 	def getair(self):
 		messagebox.showinfo("Instructions", "Once you've closed this box, start pressing the button on the device at the peak of each breath and continue until done")
@@ -364,4 +398,5 @@ class GUI:
 	def finishfr(self, fr):
 		btn1 = Button(fr, text="Submit", command=self.submit)
 		btn1.place(x=10, y=30)
-
+		btn2 = Button(fr, text="End connection", command=self.endconnection)
+		btn2.place(x=10, y=70)
