@@ -4,7 +4,6 @@ from tkinter import ttk, messagebox
 all_data = {}
 for key in ["name","sex","age","weight","height","roomTemp","bodyTemp","bpm","waist","exercise","alcohol","water","breathrate"]:
 	all_data[key] = None
-all_data = {"name":"toby","sex":"m","age":17,"weight":68,"height":180,"roomTemp":20,"bodyTemp":37,"bpm":80,"waist":82,"exercise":180,"alcohol":3.5,"water":2.3,"breathrate":15}
 
 class MyEntry(Entry):
 	
