@@ -135,3 +135,13 @@ flowchart TD;
    M -- Yes --> N(Terminate the connection) --> I;
    M -- No --> J;
 ```
++ mymax.py
+   + MyMax30102 (class) - This handles all the direct communication to the MAX30102 sensor through the I2C network. It has two methods: `write(reg, val)` writes the integer, `val`, to the register, `reg`; `read(reg, n_bytes=1)` reads a number of bytes, `n_bytes` (by default `n_bytes = 1`), from the register, `reg`, and returns it
+
+
+## Evaluation
+Overall, we would say that the project went fairly well - we created a functional, reliable piece of software that could greatly improve the health of its users. With that being said, we did not manage to create every aspect of the originally proposed solution: we had hoped to add an AI element, for example using a Neural Network to more accurately calculate how healthy the user is, or using a ChatBot to answer outstanding questions regarding how to improve the users' health. The reason we could achieve these higher goals is that the other aspects (predominantly the use of the MAX30102 sensor) took significantly longer than predicted.
+Problems we encountered includes:
++ The barometer that we were going to use for more accurate temperature measurements failed to connect to the I2C network and despite a hours of research, testing and debugging, we had to concede
++ The MAX30102 sensor was extremely inconsistent with all the documentation for it - at first we thought the code was the problem or that our understanding of I2C was incorrect. Eventually we had to email the manufacturors to ask if they knew what the problem was; they said that the data sheet we were using was not the correct one as the particular product that we purchased had an additional interface between the Pico and the sensor. With the correct data sheet, understanding the readings was much easier and we could finally get reliable, accurate data from the device
++ The push button on the breadboard seemed to let some current through even when not pressed - the solution to this was to use an ADC pin on the Pico, rather than an GP pin so that readings can be any value from 0 - 65,532 (rather than just 0 or 1). We also had to include an additional wire from the button to Ground. Then by using a threshold of 60,000, the button would only appear pressed when it actually is pressed
