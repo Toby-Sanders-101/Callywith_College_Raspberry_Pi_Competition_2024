@@ -31,7 +31,7 @@ On the Raspberry Pi, most modules should be pre-installed with python3:
 
 You may need to run `[sudo] pip install func_timeout` to install *func_timeout*. For reference, I'm using version 4.3.5
 
-You should also use `[sudo] pip install ChatterBot` in the terminal to install *chatterbot* and *chatterbot-corpus*.
+You should also use `[sudo] pip install chatterbot` in the terminal to install *chatterbot* and *chatterbot-corpus*. I'm using chatterbot v1.0.4 and chatterbot-corpus v1.2.0. Once these are installed, find where their source code is, for example */home/pi/.local/lib/python3.9/site-packages*. Then go to *chatter_corpus/data/custom*. You should see one file titled *myown.yml*. Replace that file with the [*myown.yml* file in this repository](/Raspberry_Pi_Code/myown.yml)
 
 In addition, you should [install Thonny](https://thonny.org) on the Pi
 
@@ -41,20 +41,21 @@ On the Raspberry Pi Pico W, if not already using MicroPython, you must flash the
 ## Setup
 1. Turn on the Raspberry Pi and connect to the Internet
 2. Download and unzip this repository
-3. Set up the parts as shown below:
+3. Make sure all the necessary packages are installed on the Raspberry Pi. Modify *chatterbot_corpus/data/custom/myown.yml* as described above
+4. Set up the parts as shown below:
 
 <img src="diagram.png" width="300" height="400"/> <img src="image.png" width="300" height="400"/>
 
 > [!WARNING]
 > Remove the DC power supply at this point because having this connected while the Pico is connected to the computer could damage the electronics
 
-4. If the Pico is already using MicroPython, use the USB-to-microUSB cable to connect the Pico to the Raspberry Pi. Otherwise, [install MicroPython](https://micropython.org/download/RPI_PICO_W/) first
-5. Open Thonny and select the Pico (RP2040) as the interpreter
-6. Transfer the Pico's code (from this repository) to the Pico
-7. Modify lines 14 and 15 in *Pico_W_Code/main.py* so it can connect to your network (this must be the same LAN that the Raspberry Pi is connected to)
-8. Run main.py on the Pico. Make a note of the first IP address (of the array of addresses) printed in the Shell
-9. Set line 9 in *Raspberry_Pi_Code/socket_client.py* to `pico = socket.getaddrinfo(addr,80)` where *addr* is the string of the Pico's IP address
-10. Remove the USB cable and reattach the DC power supply - it is all set up and ready for use now!
+5. If the Pico is already using MicroPython, use the USB-to-microUSB cable to connect the Pico to the Raspberry Pi. Otherwise, [install MicroPython](https://micropython.org/download/RPI_PICO_W/) first
+6. Open Thonny and select the Pico (RP2040) as the interpreter
+7. Transfer the Pico's code (from this repository) to the Pico
+8. Modify lines 14 and 15 in *Pico_W_Code/main.py* so it can connect to your network (this must be the same LAN that the Raspberry Pi is connected to)
+9. Run main.py on the Pico. Make a note of the first IP address (of the array of addresses) printed in the Shell
+10. Set line 9 in *Raspberry_Pi_Code/socket_client.py* to `pico = socket.getaddrinfo(addr,80)` where *addr* is the string of the Pico's IP address
+11. Remove the USB cable and reattach the DC power supply - it is all set up and ready for use now!
 
 
 ## Instruction
