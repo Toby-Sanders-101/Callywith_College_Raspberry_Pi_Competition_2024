@@ -255,6 +255,7 @@ class GUI:
 		lbl1 = Label(self.root, text="Ask Harry the Health Expert...", font=("Arial", 16))
 		lbl1.place(relx=0.5, rely=0.2,anchor=CENTER)
 		ent1 = Entry(self.root, font=("Arial", 16))
+		ent1.focus_set()
 		ent1.place(relx=0.5, rely=0.3,anchor=CENTER)
 		btn1 = Button(self.root, text="Get answer", font=("Arial", 16), command=self.getanswer)
 		btn1.place(relx=0.4, rely=0.4,anchor=CENTER)
