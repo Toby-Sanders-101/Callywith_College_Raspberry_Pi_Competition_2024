@@ -103,14 +103,19 @@ flowchart LR;
       6. Turn off the sensor by writing 0x02 to register 0x21
       7. Return a string containing the data in the format: "[roomTemp],[bodyTemp],[heartrate]"
 + breathcounter.py - This calculates the breathing rate of the user. It uses a Analog to Digital Converter pin to work out whether the button on the breadboard has been clicked. The user should click the button to start the timer, then they must click it 6 more times (once for each breath). After the last button press, the timer will stop and the average breathing rate will be calculated and returned
-+ main.py - This is what executes when the Pico gains power. It handles all communication with the Pi, and controls the *bloodreader.py* and *breathcounter.py* programs. Upon execution, it:
++ main.py - This is what executes when the Pico gains power. It handles all communication with the Pi, and controls the *bloodreader.py* and *breathcounter.py* programs
+   + Client (class) - This class is simply used to abstract the complicated communication code from the main program, which makes everything more readable and maintainable
+      + The `__init__()` method contains the 'waiting for a client to connect' code, then collect data from the client
+      + The `getmsg()` function waits for the next command from the Pi, then unpacks and returns it
+      + The `close()` method terminates the connection to that particular client
+      + The `respondTo(request)` function handles the processing of the requests through a series of selection statement. It then sends the response. It will return true unless the request was the keyphrase "end", or sending the response failed. The return value determines whether or not the connection will remain open (for example, if request == "end", it will return False, which will close the connection and wait for another client to connect)
+      + The `getblood()` and `getair()` functions are called when the request is their corresponding keyphrase. They first respond by sending the keyphrase "On it!" back to the Pi to show that they successfully received  and processed the command. They then procure the necessary data using the other files, and return this data to the `respondTo(request)` function
+   
+   When the main program gains power/executes, it:
    1. Initialises the *bloodreader.py* and *breathcounter.py* files
    2. Flashes the LED at Pin 1 (GP2) on for two seconds to prove that it has power and the file is running properly
    3. After which, it attempts to connect to the WLAN described in lines 14 and 15, using the **network** module. If this is successful, the program continues on. Otherwise, the LED at Pin 2 (GP4) will flash on for half a second to signal a failed attempt, and it will try again. It attempts to connect to the WLAN up to 11 times. If it still fails after that, the LED at Pin 1 (GP2) will flash on again for two seconds to signal that the device is powering off. If it does this, you should either remove and replace the power source to restart it, or connect it to the Raspberry Pi via USB to debug it in Thonny
-
-> [!NOTE]
-> You will know that it has connected to the WLAN because the LED at Pin 2 (GP4) will stay on indefinitely
-
+   > Note: You will know that it has connected to the WLAN because the LED at Pin 2 (GP4) will stay on indefinitely!
    4. It will then (using the **socket** module) create a socket at port 80 on its IP address
    5. Once the socket is set up, the Pico will wait until the Pi connects to it
    6. Once connected, the Pico will continually wait for the Pi to send commands, then it will process and respond to the commands appropriately. If the command was the keyphrase "end", the socket will be closed and the Pico will resume waiting for the Pi to connect again
