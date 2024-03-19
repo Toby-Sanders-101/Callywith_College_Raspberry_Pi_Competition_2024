@@ -16,6 +16,12 @@ This app was developed by the team at Callywith College for the PA Raspberry Pi 
 + 1 1k&Omega; resistor
 + 1 USB to microUSB cable
 
+|Recommended products|Cost|
+|-------------------|----|
+|[Pico WH](https://thepihut.com/products/raspberry-pi-pico-w?variant=41952994787523)|£7.20|
+|[Electronics Starter Kit](https://www.amazon.co.uk/BOJACK-Electronics-Potentiometer-tie-Points-Breadboard/dp/B09DCB5D9N)|£15.99|
+|[MAX30102 Sensor](https://thepihut.com/products/gravity-max30102-heart-rate-and-oximeter-sensor)|£21.30|
+|Total|£44.49|
 
 ## Packages
 On the Raspberry Pi, most modules should be pre-installed with python3:
@@ -141,7 +147,12 @@ flowchart TD;
 
 ## Evaluation
 Overall, we would say that the project went fairly well - we created a functional, reliable piece of software that could greatly improve the health of its users. With that being said, we did not manage to create every aspect of the originally proposed solution: we had hoped to add an AI element, for example using a Neural Network to more accurately calculate how healthy the user is, or using a ChatBot to answer outstanding questions regarding how to improve the users' health. The reason we could achieve these higher goals is that the other aspects (predominantly the use of the MAX30102 sensor) took significantly longer than predicted.
+
 Problems we encountered includes:
 + The barometer that we were going to use for more accurate temperature measurements failed to connect to the I2C network and despite a hours of research, testing and debugging, we had to concede
 + The MAX30102 sensor was extremely inconsistent with all the documentation for it - at first we thought the code was the problem or that our understanding of I2C was incorrect. Eventually we had to email the manufacturors to ask if they knew what the problem was; they said that the data sheet we were using was not the correct one as the particular product that we purchased had an additional interface between the Pico and the sensor. With the correct data sheet, understanding the readings was much easier and we could finally get reliable, accurate data from the device
 + The push button on the breadboard seemed to let some current through even when not pressed - the solution to this was to use an ADC pin on the Pico, rather than an GP pin so that readings can be any value from 0 - 65,532 (rather than just 0 or 1). We also had to include an additional wire from the button to Ground. Then by using a threshold of 60,000, the button would only appear pressed when it actually is pressed
++ There was no easy way to restrict the characters that can be entered in the **tkinter.Entry**s. The best solution we found was to create a derived class that has certain overrides to prevent the text from changing if it breaches certain criteria
++ We were unsure how to go about connecting the Pico and the Pi. We tried setting up an Wireless Access Point on the Pi, then we tried setting up a WAP on the Pico. We settled on using a WLAN such as that on a WiFi router, which both the Pico and Pi can connect to and send messages through
+
+Although these issues prevented us from being able to achieve all that we set out to do, they allowed us to learn more about both the hardware and software used. Most importantly though, we improved our teamwork, problem solving, and pattern recognition skills!
