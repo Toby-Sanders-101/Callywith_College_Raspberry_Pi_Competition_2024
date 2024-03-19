@@ -78,7 +78,7 @@ On the Raspberry Pi Pico W, if not already using MicroPython, you must flash the
       + The `changestateto(state)` method is a quick way of disabling or enabling the window. It's used to prevent the user from interacting with the window while they are supposed to be using the Pico's sensors
       + Both the `getblood()` and `getair()` methods work by first using a 'messagebox' to inform the user of what to do, then disabling the window. Next it gets the data (via the Connection class) and finally it enables the window again
       + The `submit()` method first checks that all the data is present (presence check), then it terminates the socket connection to the Pico and prepares the GUI for the 'results' screen. Next, it performs all teh necessary calculations on the data and finally it outputs the results and suggestions to the window
-+ main.py - This handles the co-ordination between the GUI and the Connection classes through the use of threading: a thread is created to run the GUI, then once that has loaded fully, the main thread starts attempting to connect to the Pico
++ main.py - This handles the co-ordination between the GUI and the Connection classes through the use of threading: a thread is created to run the GUI, then once that has loaded fully, the main thread starts attempting to connect to the Pico and uses recursion to ensure that it continues to make attempts until it successfully connects
 + socket_client.py
    + Connection (class) - This class handles all communication with the Pico
       + The `__init__()` method attempts to connect to the Pico (at port 80 on whatever IP address you've specified in line 9) through the **socket** module
@@ -86,7 +86,47 @@ On the Raspberry Pi Pico W, if not already using MicroPython, you must flash the
       + The `receive()` function waits for a response from the Pico, unpacks it and returns it (unless it is the keyphrase "end" which will terminate the connection)
       + Both the `getblooddata()` and `getairdata()` methods follow a similar protocol, using timeouts to prevent the program from running indefinitely. The protocol works as shown below:
 ```mermaid
+---
+title: Communication protocol
+---
 flowchart LR;
    A(Pi) ==>|&quot;blood&quot; or &quot;air&quot;| B(Pico) ==>|&quot;On it!&quot;| C(Pi) -->|... Pico collects data ...| E(Pico) ==>|string of data| F(Pi) ==>|update labels| G[GUI];
 ```
 #### Pico_W_Code
++ bloodreader.py - This handles all the commands for and data from the MAX30102, as well as the processing of the data. When run, it initialises the I2C network and creates a MyMAX30102 class instance
+   + The `getReadings()` function is called by *main.py* when it receives the "blood" command from the Pi. It follows the steps:
+      1. Turn on the sensor by writing 0x01 to register 0x21
+      2. Get the inital temperature by reading registers 0x14 and 0x15 - this should be the temperature of the room
+      3. Continuously get heartrate readings by reading 8 bytes from register 0x0C every 100ms, for 10s
+      4. Average the heartrate readings (ignoring any 0 bpm reeadings)
+      5. Get the final temperature by reading registers 0x14 and 0x15 again - this should be the temperature of the finger/body
+      6. Turn off the sensor by writing 0x02 to register 0x21
+      7. Return a string containing the data in the format: "[roomTemp],[bodyTemp],[heartrate]"
++ breathcounter.py - This calculates the breathing rate of the user. It uses a Analog to Digital Converter pin to work out whether the button on the breadboard has been clicked. The user should click the button to start the timer, then they must click it 6 more times (once for each breath). After the last button press, the timer will stop and the average breathing rate will be calculated and returned
++ main.py - This is what executes when the Pico gains power. It handles all communication with the Pi, and controls the *bloodreader.py* and *breathcounter.py* programs. Upon execution, it:
+   1. Initialises the *bloodreader.py* and *breathcounter.py* files
+   2. Flashes the LED at Pin 1 (GP2) on for two seconds to prove that it has power and the file is running properly
+   3. After which, it attempts to connect to the WLAN described in lines 14 and 15, using the **network** module. If this is successful, the program continues on. Otherwise, the LED at Pin 2 (GP4) will flash on for half a second to signal a failed attempt, and it will try again. It attempts to connect to the WLAN up to 11 times. If it still fails after that, the LED at Pin 1 (GP2) will flash on again for two seconds to signal that the device is powering off. If it does this, you should either remove and replace the power source to restart it, or connect it to the Raspberry Pi via USB to debug it in Thonny
+
+> [!NOTE]
+> You will know that it has connected to the WLAN because the LED at Pin 2 (GP4) will stay on indefinitely
+
+   4. It will then (using the **socket** module) create a socket at port 80 on its IP address
+   5. Once the socket is set up, the Pico will wait until the Pi connects to it
+   6. Once connected, the Pico will continually wait for the Pi to send commands, then it will process and respond to the commands appropriately. If the command was the keyphrase "end", the socket will be closed and the Pico will resume waiting for the Pi to connect again
+```mermaid
+---
+title: main.py flowchart
+---
+flowchart TD;
+   A([Pico gains power]) --> B(Initialise other files) --> C(Flash LED1 on and off) --> D{Attempt to connect to WLAN};
+   D -- Successful --> Q(Turn LED2 on) --> E(Set up socket);
+   D -- Failed --> F{Try again?};
+   F -- Yes --> P(Flash LED2 on and off) --> D;
+   F -- No --> G(Flash LED1 on and off) --> H([Power off]);
+   E --> I(Wait for Pi to connect) --> J(Wait for command from Pi) --> K(Process command);
+   K --> L(Respond to Pi);
+   L --> M{Was it &quot;end&quot;?};
+   M -- Yes --> N(Terminate the connection) --> I;
+   M -- No --> J;
+```
