@@ -240,8 +240,11 @@ class GUI:
 		self.root.update()
 		if self.bot is not None:
 			question = self.questionentry.get()
-			answer = self.bot.getanswer(question)
-			self.answerlbl.config(text=answer)
+			if question != "":
+				answer = self.bot.getanswer(question)
+				self.answerlbl.config(text=answer)
+			else:
+				self.answerlbl.config(text="Please enter a question")
 		else:
 			self.answerlbl.config(text="Harry is unavailable at this time :(")
 		self.changestateto(NORMAL)
