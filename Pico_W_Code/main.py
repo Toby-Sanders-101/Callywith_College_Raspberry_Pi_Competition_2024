@@ -5,10 +5,10 @@ from machine import *
 import bloodreader as bloodreader
 import breathcounter as breathcounter
 
-Pin(2,Pin.OUT).value(0)
-Pin(1,Pin.OUT).value(1)
+Pin(4,Pin.OUT).value(0)
+Pin(2,Pin.OUT).value(1)
 time.sleep_ms(2000)
-Pin(1,Pin.OUT).value(0)
+Pin(2,Pin.OUT).value(0)
 
 def getonlan():
 	ssid = "HUAWEI-0411DD" #change this to the name of your WiFi
@@ -52,7 +52,6 @@ class Client():
 		print('client connected from', addr)
 		self.cl = cl
 		self.addr = addr
-		self.count = 0
 
 	def getblood(self):
 		print("\nSending to",self.addr,":\t","On it!")
@@ -100,13 +99,13 @@ for i in range(10):
 		print("failed\n")
 		time.sleep_ms(500)
 		print("attempt "+str(i+2)+"...")
-		Pin(2,Pin.OUT).value(1)
+		Pin(4,Pin.OUT).value(1)
 		time.sleep_ms(500)
-		Pin(2,Pin.OUT).value(0)
+		Pin(4,Pin.OUT).value(0)
 		onlan = getonlan()
 if onlan:
 	print("succeeded")
-	Pin(2,Pin.OUT).value(1)
+	Pin(4,Pin.OUT).value(1)
 	s, myAddr = setupsocket()
 	if myAddr!="error":
 		while True:
@@ -116,9 +115,8 @@ if onlan:
 			while continueTalking:
 				request = client.getmsg()
 				continueTalking = client.respondTo(request)
-				client.count += 1
 			client.close()
 
-Pin(1,Pin.OUT).value(1)
+Pin(2,Pin.OUT).value(1)
 time.sleep_ms(2000)
-Pin(1,Pin.OUT).value(0)
+Pin(2,Pin.OUT).value(0)
