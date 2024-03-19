@@ -1,6 +1,6 @@
 # Raspberry Pi Competition - PA Consulting
 ## Introduction
-This app was developed by the team at Callywith College for the PA Raspberry Pi Competition 2024, where the objective was to create software (predominantly using a raspberry pi) that can help someone's health. It is designed to analyse the health of the user using a series of questions, sensors and calculations. The target audience is gamer's as they are a notoriously unhealthy subpopulation. The main software and display is on the Raspberry Pi; a Pico W is used to collect certain data before sending the results to the Pi via a WiFi connection.
+This app was developed by the team at Callywith College for the PA Raspberry Pi Competition 2024, where the objective was to create software (predominantly using a Raspberry Pi) that can help someone's health. It is designed to analyse the health of the user using a series of questions, sensors and calculations. The target audience is gamer's as they are a notoriously unhealthy subpopulation. The main software and display is on the Raspberry Pi; a Pico W is used to collect certain data before sending the results to the Pi via a WiFi connection.
 
 
 ## Parts/devices
@@ -22,6 +22,7 @@ This app was developed by the team at Callywith College for the PA Raspberry Pi 
 |[Electronics Starter Kit](https://www.amazon.co.uk/BOJACK-Electronics-Potentiometer-tie-Points-Breadboard/dp/B09DCB5D9N)|£15.99|
 |[MAX30102 Sensor](https://thepihut.com/products/gravity-max30102-heart-rate-and-oximeter-sensor)|£21.30|
 |Total|£44.49|
+
 
 ## Packages
 On the Raspberry Pi, most modules should be pre-installed with python3:
@@ -71,9 +72,11 @@ On the Raspberry Pi Pico W, if not already using MicroPython, you must flash the
 > If any of these readings seem drastically wrong, you can redo them as many times as you want!
 
 6. Once all the sections are completed fully, press **Submit**. The computer will process all your data and give you a full analysis of your health including a personalised list of improvements to make
-7. Finally you can press **Quit** and it will terminate the connection to the Pico then close the GUI
-8. If you want to do it again, reopen *Raspberry_Pi_Code/main.py* and it should reconnect to the Pico
-9. To turn off or restart the Pico, simply remove the power source (and reattach it to reset it)
+7. Next, you can either press **Quit** and it will terminate the connection to the Pico then close the GUI, or press **Ask Harry...** if you have any outstanding questions related to your results or health and wellbeing in general
+8. If you choose the latter option, you can type in any questions for our ChatBot Harry to answer, then press **Get answer** to get its result. You can do this any many times as you want or you can just press **Quit** to end the program
+9. If you want to do it again, reopen *Raspberry_Pi_Code/main.py* and it should reconnect to the Pico
+10. To turn off or restart the Pico, simply remove the power source (and reattach it to reset it)
+
 
 ## Explanation
 #### Raspberry_Pi_Code
@@ -86,8 +89,14 @@ On the Raspberry Pi Pico W, if not already using MicroPython, you must flash the
       + The `gotonextentry()` method is a simple sub-routine that is only used to improve the UX. It allows the user to press Enter to move between buttons and textboxes
       + The `changestateto(state)` method is a quick way of disabling or enabling the window. It's used to prevent the user from interacting with the window while they are supposed to be using the Pico's sensors
       + Both the `getblood()` and `getair()` methods work by first using a 'messagebox' to inform the user of what to do, then disabling the window. Next it gets the data (via the Connection class) and finally it enables the window again
-      + The `submit()` method first checks that all the data is present (presence check), then it terminates the socket connection to the Pico and prepares the GUI for the 'results' screen. Next, it performs all teh necessary calculations on the data and finally it outputs the results and suggestions to the window
-+ main.py - This handles the co-ordination between the GUI and the Connection classes through the use of threading: a thread is created to run the GUI, then once that has loaded fully, the main thread starts attempting to connect to the Pico and uses recursion to ensure that it continues to make attempts until it successfully connects
+      + The `submit()` method first checks that all the data is present (presence check), then it terminates the socket connection to the Pico and prepares the GUI for the 'results' screen. Next, it performs all the necessary calculations on the data and finally it outputs the results and suggestions to the window
+      + The `loadharryfr()` method is called by pressing the **Ask Harry...** button. It clears the tkinter window and creates the appropriate widgets so the user can interact with the ChatBot
+      + `getanswer()` is a simple method that is called by pressing the **Get answer** button. First, it disables the window. Then, it checks that the ChatBot has loaded and that the entry isn't empty (presence check). Next, if everything is OK, it gets an answer from the ChatBot using the text in the entry box. After which it updates the label appropriately, and finally, the window is enabled again
++ harry.py
+   + Harry (class) - This is the ChatBot
+      + The `__init__()` method creates and trains the bot
+      + The `getanswer(question)` function gets the response from the bot and returns it
++ main.py - This handles the co-ordination between the GUI, the Harry and the Connection classes through the use of threading: a thread is created to run the GUI, then once that has loaded fully, another thread is made to load/train the ChatBot (Harry), meanwhile the main thread starts attempting to connect to the Pico and uses recursion to ensure that it continues to make attempts until it successfully connects
 + socket_client.py
    + Connection (class) - This class handles all communication with the Pico
       + The `__init__()` method attempts to connect to the Pico (at port 80 on whatever IP address you've specified in line 9) through the **socket** module
@@ -149,7 +158,7 @@ flowchart TD;
 
 
 ## Evaluation
-Overall, we would say that the project went fairly well - we created a functional, reliable piece of software that could greatly improve the health of its users. With that being said, we did not manage to create every aspect of the originally proposed solution: we had hoped to add an AI element, for example using a Neural Network to more accurately calculate how healthy the user is, or using a ChatBot to answer outstanding questions regarding how to improve the users' health. The reason we could achieve these higher goals is that the other aspects (predominantly the use of the MAX30102 sensor) took significantly longer than predicted.
+Overall, we would say that the project went well - we created a functional, reliable piece of software that could greatly improve the health of its users. With that being said, we did not manage to create every aspect of the originally proposed solution: we had hoped to add a Neural Network to more accurately calculate how healthy the user is. The reason we could achieve these higher goals is that the other aspects (predominantly the use of the MAX30102 sensor) took significantly longer than predicted to create.
 
 Problems we encountered includes:
 + The barometer that we were going to use for more accurate temperature measurements failed to connect to the I2C network and despite a hours of research, testing and debugging, we had to concede
@@ -158,4 +167,4 @@ Problems we encountered includes:
 + There was no easy way to restrict the characters that can be entered in the **tkinter.Entry**s. The best solution we found was to create a derived class that has certain overrides to prevent the text from changing if it breaches certain criteria
 + We were unsure how to go about connecting the Pico and the Pi. We tried setting up an Wireless Access Point on the Pi, then we tried setting up a WAP on the Pico. We settled on using a WLAN such as that on a WiFi router, which both the Pico and Pi can connect to and send messages through
 
-Although these issues prevented us from being able to achieve all that we set out to do, they allowed us to learn more about both the hardware and software used. Most importantly though, we improved our teamwork, problem solving, and pattern recognition skills!
+Although these issues prevented us from being able to achieve everything that we set out to do, they allowed us to learn more about both the hardware and software used. Most importantly though, we improved our teamwork, problem solving, and pattern recognition skills!
