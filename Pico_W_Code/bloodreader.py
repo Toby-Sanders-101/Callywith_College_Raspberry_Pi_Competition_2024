@@ -23,6 +23,9 @@ def getReadings():
 			bpmList.append(bpm)
 		sleep_ms(100)
 	finalTemp = int.from_bytes(sensor.read(20),"big") + int.from_bytes(sensor.read(21),"big")/16
-	aveBpm = sum(bpmList)/len(bpmList)
+	if len(bpmList) != 0: #this is to avoid division by 0 errors
+		aveBpm = sum(bpmList)/len(bpmList)
+	else:
+		aveBpm = 0
 	sensor.write(33,2)#turn off
 	return str(round(roomTemp))+","+str(round(finalTemp))+","+str(round(aveBpm))
